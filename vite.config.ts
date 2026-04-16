@@ -6,10 +6,10 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
     port: 3011,
-    allowedHosts: ["hri.thefirstimpression.ai"],
+    allowedHosts: true,
   },
   preview: {
-    allowedHosts: ["hri.thefirstimpression.ai"],
+    allowedHosts: true,
   },
   resolve: {
     alias: {
