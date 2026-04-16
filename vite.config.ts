@@ -8,6 +8,9 @@ export default defineConfig({
     port: 3011,
     allowedHosts: ["hri.thefirstimpression.ai"],
   },
+  preview: {
+    allowedHosts: ["hri.thefirstimpression.ai"],
+  },
   resolve: {
     alias: {
       "@": new URL("./src", import.meta.url).pathname,
