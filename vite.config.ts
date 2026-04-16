@@ -5,7 +5,11 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
-    port: 3011,
+    host: true,
+    allowedHosts: ['hri.thefirstimpression.ai'],
+  },
+  preview: {
+    host: true,
     allowedHosts: ['hri.thefirstimpression.ai'],
   },
   resolve: {
