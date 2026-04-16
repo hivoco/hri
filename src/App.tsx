@@ -1,121 +1,103 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { Toaster } from "sonner";
+import { Header } from "./components/layout/Header";
+import { TabBar } from "./components/layout/Tabs";
+import { StatsRow } from "./components/dashboard/StatsRow";
+import { BrandFilterBar } from "./components/dashboard/BrandFilterBar";
+import { InputPanel } from "./components/panels/InputPanel";
+import { ScoresPanel } from "./components/panels/ScoresPanel";
+import { ThemesPanel } from "./components/panels/ThemesPanel";
+import { BudgetPanel } from "./components/panels/BudgetPanel";
+import { BrandsPanel } from "./components/panels/BrandsPanel";
+import { useScorecardStore } from "./hooks/use-scorecard-store";
+import { useTheme } from "./hooks/use-theme";
+import { useSummary } from "./hooks/use-summary";
 
-function App() {
-  const [count, setCount] = useState(0)
+export function App() {
+  const store = useScorecardStore();
+  const { isDark, toggle } = useTheme();
+  const { data: apiSummary } = useSummary(store.activeBrandFilter, store.weights);
+
+  const stats = {
+    videoCount: apiSummary?.videos_tracked ?? store.stats.videoCount,
+    avgScore: apiSummary?.avg_score ?? store.stats.avgScore,
+    bestTheme: apiSummary?.best_theme ?? store.stats.bestTheme,
+    topCreator: apiSummary?.top_creator ?? store.stats.topCreator,
+    budgetAtRisk: apiSummary?.budget_at_risk ?? store.stats.budgetAtRisk,
+  };
 
   return (
     <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+      <Toaster position="top-right" richColors />
+      <div
+        className="fixed inset-0 pointer-events-none z-0 opacity-40"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E")`,
+        }}
+      />
+      <div className="mx-auto max-w-[1400px] px-6 relative z-1">
+        <Header isDark={isDark} onToggleTheme={toggle} />
+        <TabBar activeTab={store.activeTab} onTabChange={store.setActiveTab} />
+        <StatsRow
+          videoCount={stats.videoCount}
+          avgScore={stats.avgScore}
+          bestTheme={stats.bestTheme}
+          topCreator={stats.topCreator}
+          budgetAtRisk={stats.budgetAtRisk}
+        />
+        <BrandFilterBar
+          activeBrand={store.activeBrandFilter}
+          onBrandChange={store.setActiveBrandFilter}
+        />
 
-      <div className="ticks"></div>
+        {store.activeTab === "input" && (
+          <InputPanel
+            videos={store.videos}
+            weights={store.weights}
+            totalWeight={store.totalWeight}
+            onAddVideo={store.addVideo}
+            onRemoveVideo={store.removeVideo}
+            onImportVideos={store.importVideos}
+            onLoadSample={store.loadSampleData}
+            onUpdateWeight={store.updateWeight}
+            onResetWeights={store.resetWeights}
+            onSaveCampaign={store.setCampaignMeta}
+            campaignMeta={store.campaignMeta}
+            filteredVideos={store.filteredVideos}
+            activeBrandFilter={store.activeBrandFilter}
+          />
+        )}
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+        {store.activeTab === "scores" && (
+          <ScoresPanel
+            scoredVideos={store.scoredVideos}
+            activeBrandFilter={store.activeBrandFilter}
+            weights={store.weights}
+          />
+        )}
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
+        {store.activeTab === "themes" && (
+          <ThemesPanel
+            themeStats={store.themeStats}
+            activeBrandFilter={store.activeBrandFilter}
+            weights={store.weights}
+          />
+        )}
+
+        {store.activeTab === "budget" && (
+          <BudgetPanel
+            scoredVideos={store.scoredVideos}
+            activeBrandFilter={store.activeBrandFilter}
+            weights={store.weights}
+          />
+        )}
+
+        {store.activeTab === "brands" && (
+          <BrandsPanel
+            weights={store.weights}
+            onDrillBrand={store.drillBrand}
+          />
+        )}
+      </div>
     </>
-  )
+  );
 }
-
-export default App
